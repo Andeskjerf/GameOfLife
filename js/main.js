@@ -57,6 +57,7 @@ function getCursorPosition(canvas, event) {
 function getNeighborCount(x, y) {
   let count = 0
   let deadCells = []
+	let iterations = 0
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
       if (i === 0 && j === 0) continue
@@ -64,10 +65,12 @@ function getNeighborCount(x, y) {
         count++
       } else {
         deadCells[y + j] = deadCells[y + j] || []
-        deadCells[y + j][x + i] = true
+        deadCells[y + j][x + i] = false
+				iterations++
       }
     }
   }
+	console.log(iterations)
   return { count, deadCells }
 }
 
