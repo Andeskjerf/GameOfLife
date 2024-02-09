@@ -31,13 +31,14 @@ function onMouseDown(e) {
   const { x, y } = getCursorPosition(canvas, e)
   const xIndex = findXIndex(x)
   const yIndex = findYIndex(y)
-  for (let i = 0; i < cells.length; i++) {
-    if (cells[i].xIndex === xIndex && cells[i].yIndex === yIndex) {
-      cells.splice(i, 1)
-      return
-    }
+
+  if (cells[yIndex] && cells[yIndex][xIndex]) {
+    cells[yIndex][xIndex] = false
+    return
   }
-  cells.push({ yIndex, xIndex })
+
+  cells[yIndex] = cells[yIndex] || []
+  cells[yIndex][xIndex] = true
 }
 
 function onKeyDown(e) {
@@ -59,44 +60,48 @@ function getNeighborCount(x, y) {
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
       if (i === 0 && j === 0) continue
-			let oldCount = count
-      for (let k = 0; k < cells.length; k++) {
-        if (cells[k].xIndex === x + i && cells[k].yIndex === y + j) {
-          count++
-					break
-        } 
+      if (cells[y + j] && cells[y + j][x + i]) {
+        count++
+      } else {
+        deadCells[y + j] = deadCells[y + j] || []
+        deadCells[y + j][x + i] = true
       }
-			if (oldCount == count) deadCells.push({ xIndex: x + i, yIndex: y + j })
     }
   }
   return { count, deadCells }
 }
 
 function updateCells() {
-  for (let cell in cells) {
-    const result = getNeighborCount(cells[cell].xIndex, cells[cell].yIndex)
-    if (result.count < 2 || result.count > 3) {
-      cells.splice(cell, 1)
+  let deadNeighbors = []
+  for (let y in cells) {
+    for (let x in cells[y]) {
+			if (!cells[y][x]) continue
+      const result = getNeighborCount(x, y)
+      console.log(result)
+      if (result.count < 2 || result.count > 3) {
+        cells[y][x] = false
+      }
+      for (let deadY in result.deadCells) {
+        for (let deadX in result.deadCells[deadY]) {
+          const deadResult = getNeighborCount(deadX, deadY)
+          // console.log(deadResult)
+          if (deadResult.count == 3) {
+            cells[deadY] = deadCells[deadY] || []
+            cells[deadY][deadX] = deadCells[deadY][deadX]
+          }
+        }
+      }
     }
-		for (let i = 0; i < result.deadCells.length; i++) {
-			const deadResult = getNeighborCount(result.deadCells[i].xIndex, result.deadCells[i].yIndex)
-			if (deadResult.count === 3) {
-				cells.push({ xIndex: result.deadCells[i].xIndex, yIndex: result.deadCells[i].yIndex })
-			}
-		}
   }
 }
 
 function draw() {
   ctx.clearRect(0, 0, width, height)
-  for (let cell in cells) {
-    ctx.fillStyle = liveColor
-    ctx.fillRect(
-      cells[cell].xIndex * cellSize,
-      cells[cell].yIndex * cellSize,
-      cellSize,
-      cellSize,
-    )
+  for (let y in cells) {
+    for (let x in cells[y]) {
+      ctx.fillStyle = cells[y][x] ? liveColor : deadColor
+      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
+    }
   }
 }
 
@@ -107,4 +112,4 @@ function loop() {
 
 setup()
 
-setInterval(loop, 500)
+setInterval(loop, 100)
