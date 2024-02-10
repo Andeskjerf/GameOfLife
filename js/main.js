@@ -57,7 +57,7 @@ function getCursorPosition(canvas, event) {
 function getNeighborCount(x, y) {
   let count = 0
   let deadCells = []
-	let iterations = 0
+  let iterations = 0
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
       if (i === 0 && j === 0) continue
@@ -66,11 +66,11 @@ function getNeighborCount(x, y) {
       } else {
         deadCells[y + j] = deadCells[y + j] || []
         deadCells[y + j][x + i] = false
-				iterations++
+        iterations++
       }
     }
   }
-	console.log(iterations)
+  console.log(iterations)
   return { count, deadCells }
 }
 
@@ -78,21 +78,24 @@ function updateCells() {
   let deadNeighbors = []
   for (let y in cells) {
     for (let x in cells[y]) {
-			if (!cells[y][x]) continue
+      if (!cells[y][x]) continue
       const result = getNeighborCount(x, y)
-      console.log(result)
+      deadNeighbors = deadNeighbors.concat(result.deadCells)
       if (result.count < 2 || result.count > 3) {
         cells[y][x] = false
+      } else if (result.count == 2 || result.count == 3) {
+        cells[y][x] = true
       }
-      for (let deadY in result.deadCells) {
-        for (let deadX in result.deadCells[deadY]) {
-          const deadResult = getNeighborCount(deadX, deadY)
-          // console.log(deadResult)
-          if (deadResult.count == 3) {
-            cells[deadY] = deadCells[deadY] || []
-            cells[deadY][deadX] = deadCells[deadY][deadX]
-          }
-        }
+    }
+  }
+  for (let deadY in deadNeighbors) {
+    for (let deadX in deadNeighbors[deadY]) {
+      const deadResult = getNeighborCount(deadX, deadY)
+      // console.log(deadNeighbors[deadY][deadX])
+      if (deadResult.count == 3) {
+        cells[deadY] = deadCells[deadY] || []
+        cells[deadY][deadX] = deadCells[deadY][deadX] || true
+				// console.log(cells[deadY][deadX])
       }
     }
   }
