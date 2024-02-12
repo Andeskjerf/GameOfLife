@@ -162,6 +162,12 @@ function draw() {
     cellSize,
     cellSize,
   )
+
+  ctx.fillStyle = 'white'
+  ctx.font = '28px serif'
+  ctx.fillText("'Space' to run", 25, 50)
+  ctx.fillText("'C' clear", 25, 100)
+  ctx.fillText("'G' random", 25, 150)
 }
 
 function loop() {
