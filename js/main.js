@@ -6,7 +6,7 @@ let simRunning = false
 const liveColor = 'black'
 const deadColor = 'white'
 
-let cells = []
+let cells = new Map()
 
 function setup() {
   width = window.innerWidth
@@ -27,18 +27,22 @@ function findYIndex(y) {
   return Math.floor(y / cellSize)
 }
 
+function getCoordKey(x, y) {
+  return `x${x}_y${y}`
+}
+
 function onMouseDown(e) {
   const { x, y } = getCursorPosition(canvas, e)
   const xIndex = findXIndex(x)
   const yIndex = findYIndex(y)
 
-  if (cells[yIndex] && cells[yIndex][xIndex]) {
-    cells[yIndex][xIndex] = false
+  let coord = getCoordKey(xIndex, yIndex)
+  if (cells.get(coord)) {
+    cells.delete(coord)
     return
   }
 
-  cells[yIndex] = cells[yIndex] || []
-  cells[yIndex][xIndex] = true
+  cells.set(coord, { x: xIndex, y: yIndex })
 }
 
 function onKeyDown(e) {
@@ -57,58 +61,47 @@ function getCursorPosition(canvas, event) {
 function getNeighborCount(x, y) {
   let count = 0
   let deadCells = []
-  let iterations = 0
+	// get each adjacent cell
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
       if (i === 0 && j === 0) continue
-      if (cells[y + j] && cells[y + j][x + i]) {
-        count++
-      } else {
-        deadCells[y + j] = deadCells[y + j] || []
-        deadCells[y + j][x + i] = false
-        iterations++
-      }
+      if (cells.get(getCoordKey(x + i, y + j))) count++
+      else deadCells.push({ x: x + i, y: y + j })
     }
   }
-  console.log(iterations)
   return { count, deadCells }
 }
 
 function updateCells() {
   let deadNeighbors = []
-  for (let y in cells) {
-    for (let x in cells[y]) {
-      if (!cells[y][x]) continue
-      const result = getNeighborCount(x, y)
-      deadNeighbors = deadNeighbors.concat(result.deadCells)
-      if (result.count < 2 || result.count > 3) {
-        cells[y][x] = false
-      } else if (result.count == 2 || result.count == 3) {
-        cells[y][x] = true
-      }
+  let newCellMap = new Map()
+
+	// only live cells with either 2 or 3 neighbors pass on to the next generation
+  cells.forEach((v, k) => {
+    const result = getNeighborCount(v.x, v.y)
+    deadNeighbors = deadNeighbors.concat(result.deadCells)
+    if (result.count == 2 || result.count == 3) {
+      newCellMap.set(k, v)
     }
-  }
-  for (let deadY in deadNeighbors) {
-    for (let deadX in deadNeighbors[deadY]) {
-      const deadResult = getNeighborCount(deadX, deadY)
-      // console.log(deadNeighbors[deadY][deadX])
-      if (deadResult.count == 3) {
-        cells[deadY] = deadCells[deadY] || []
-        cells[deadY][deadX] = deadCells[deadY][deadX] || true
-				// console.log(cells[deadY][deadX])
-      }
-    }
-  }
+  })
+
+	// any dead cells with exactly 3 neighbors becomes a live cell
+	deadNeighbors.forEach((e) => {
+		const result = getNeighborCount(e.x, e.y)
+		if (result.count == 3) {
+			newCellMap.set(getCoordKey(e.x, e.y), e)
+		}
+	})
+
+  cells = newCellMap
 }
 
 function draw() {
   ctx.clearRect(0, 0, width, height)
-  for (let y in cells) {
-    for (let x in cells[y]) {
-      ctx.fillStyle = cells[y][x] ? liveColor : deadColor
-      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
-    }
-  }
+  ctx.fillStyle = liveColor
+  cells.forEach((e) =>
+    ctx.fillRect(e.x * cellSize, e.y * cellSize, cellSize, cellSize),
+  )
 }
 
 function loop() {
