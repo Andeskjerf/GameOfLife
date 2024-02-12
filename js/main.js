@@ -73,6 +73,9 @@ function onKeyDown(e) {
       cells.clear()
       generateRandomPattern()
       break
+    case 'KeyC':
+      cells.clear()
+      break
   }
 }
 
