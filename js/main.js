@@ -156,9 +156,9 @@ function draw() {
 function loop() {
   if (simRunning) updateCells()
   draw()
+  window.requestAnimationFrame(loop)
 }
 
 setup()
 
-setInterval(loop, 100)
-// setInterval(draw, 10)
+window.requestAnimationFrame(loop)
