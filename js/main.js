@@ -8,8 +8,8 @@ const cursorColor = '#2d2d2d'
 
 let cells = new Map()
 let cursorPos = {
-	x: 0,
-	y: 0
+  x: 0,
+  y: 0,
 }
 
 function setup() {
@@ -20,7 +20,7 @@ function setup() {
   cellSize = Math.floor(width / 50)
 
   canvas.addEventListener('mousedown', onMouseDown)
-	canvas.addEventListener('mousemove', updateCursorPos)
+  canvas.addEventListener('mousemove', updateCursorPos)
   canvas.addEventListener('keydown', onKeyDown)
 }
 
@@ -55,8 +55,8 @@ function updateCursorPos(e) {
   const xIndex = findXIndex(x)
   const yIndex = findYIndex(y)
 
-	cursorPos.x = xIndex
-	cursorPos.y = yIndex
+  cursorPos.x = xIndex
+  cursorPos.y = yIndex
 }
 
 function onKeyDown(e) {
@@ -117,8 +117,13 @@ function draw() {
     ctx.fillRect(e.x * cellSize, e.y * cellSize, cellSize, cellSize),
   )
 
-	ctx.fillStyle = cursorColor
-	ctx.fillRect(cursorPos.x * cellSize, cursorPos.y * cellSize, cellSize, cellSize)
+  ctx.fillStyle = cursorColor
+  ctx.fillRect(
+    cursorPos.x * cellSize,
+    cursorPos.y * cellSize,
+    cellSize,
+    cellSize,
+  )
 }
 
 function loop() {
