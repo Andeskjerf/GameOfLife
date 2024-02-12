@@ -13,7 +13,7 @@ function setup() {
   height = window.innerHeight
   canvas.width = width
   canvas.height = height
-  cellSize = Math.floor(width / 30)
+  cellSize = Math.floor(width / 50)
 
   canvas.addEventListener('mousedown', onMouseDown)
   canvas.addEventListener('keydown', onKeyDown)
