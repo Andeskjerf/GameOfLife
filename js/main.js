@@ -3,6 +3,7 @@ const ctx = canvas.getContext('2d')
 
 let width, height, cellSize
 let simRunning = false
+let drawing = false
 const liveColor = 'black'
 const cursorColor = '#2d2d2d'
 
@@ -19,9 +20,16 @@ function setup() {
   canvas.height = height
   cellSize = Math.floor(width / 50)
 
-  canvas.addEventListener('mousedown', onMouseDown)
-  canvas.addEventListener('mousemove', updateCursorPos)
+  canvas.addEventListener('mousedown', () => (drawing = true))
+  canvas.addEventListener('mouseup', () => (drawing = false))
+  canvas.addEventListener('mousemove', onMouseMove)
   canvas.addEventListener('keydown', onKeyDown)
+
+  // we don't want the context menu on right click
+  canvas.oncontextmenu = function (e) {
+    e.preventDefault()
+    e.stopPropagation()
+  }
 }
 
 function findXIndex(x) {
@@ -36,27 +44,24 @@ function getCoordKey(x, y) {
   return `x${x}_y${y}`
 }
 
-function onMouseDown(e) {
-  const { x, y } = getCursorPosition(canvas, e)
-  const xIndex = findXIndex(x)
-  const yIndex = findYIndex(y)
-
-  let coord = getCoordKey(xIndex, yIndex)
-  if (cells.get(coord)) {
-    cells.delete(coord)
-    return
-  }
-
-  cells.set(coord, { x: xIndex, y: yIndex })
-}
-
-function updateCursorPos(e) {
+function onMouseMove(e) {
   const { x, y } = getCursorPosition(canvas, e)
   const xIndex = findXIndex(x)
   const yIndex = findYIndex(y)
 
   cursorPos.x = xIndex
   cursorPos.y = yIndex
+
+  if (drawing) {
+    let coord = getCoordKey(xIndex, yIndex)
+    // BUG: right click doesn't work here for some reason??
+    // if (e.button == 2 && cells.get(coord)) {
+    //   cells.delete(coord)
+    //   return
+    // }
+
+    cells.set(coord, { x: xIndex, y: yIndex })
+  }
 }
 
 function onKeyDown(e) {
