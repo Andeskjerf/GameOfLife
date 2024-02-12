@@ -18,7 +18,8 @@ function setup() {
   height = window.innerHeight
   canvas.width = width
   canvas.height = height
-  cellSize = Math.floor(width / 50)
+  cellSize = 10
+  // cellSize = Math.floor(width / 50)
 
   canvas.addEventListener('mousedown', () => (drawing = true))
   canvas.addEventListener('mouseup', () => (drawing = false))
@@ -154,9 +155,10 @@ function draw() {
 
 function loop() {
   if (simRunning) updateCells()
+  draw()
 }
 
 setup()
 
 setInterval(loop, 100)
-setInterval(draw, 10)
+// setInterval(draw, 10)
