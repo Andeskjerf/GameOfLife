@@ -97,7 +97,7 @@ function getCursorPosition(canvas, event) {
 function generateRandomPattern() {
   for (let x = 0; x < width; x += cellSize) {
     for (let y = 0; y < height; y += cellSize) {
-      if (Math.random() >= 0.25) {
+      if (Math.random() >= 0.9) {
         let xPos = findXIndex(x)
         let yPos = findYIndex(y)
         cells.set(getCoordKey(xPos, yPos), { x: xPos, y: yPos })
