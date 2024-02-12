@@ -60,8 +60,14 @@ function updateCursorPos(e) {
 }
 
 function onKeyDown(e) {
-  if (e.code === 'Space') {
-    simRunning = !simRunning
+  switch (e.code) {
+    case 'Space':
+      simRunning = !simRunning
+      break
+    case 'KeyG':
+      cells.clear()
+      generateRandomPattern()
+      break
   }
 }
 
@@ -70,6 +76,18 @@ function getCursorPosition(canvas, event) {
   const x = event.clientX - rect.left
   const y = event.clientY - rect.top
   return { x, y }
+}
+
+function generateRandomPattern() {
+  for (let x = 0; x < width; x += cellSize) {
+    for (let y = 0; y < height; y += cellSize) {
+      if (Math.random() >= 0.5) {
+        let xPos = findXIndex(x)
+        let yPos = findYIndex(y)
+        cells.set(getCoordKey(xPos, yPos), { x: xPos, y: yPos })
+      }
+    }
+  }
 }
 
 function getNeighborCount(x, y) {
