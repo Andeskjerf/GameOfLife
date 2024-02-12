@@ -99,6 +99,13 @@ function generateRandomPattern() {
   }
 }
 
+function isWithinWindow(x, y) {
+  if (x < width && y < height && x >= 0 && y >= 0) {
+    return true
+  }
+  return false
+}
+
 function getNeighborCount(x, y) {
   let count = 0
   let deadCells = []
@@ -121,7 +128,7 @@ function updateCells() {
   cells.forEach((v, k) => {
     const result = getNeighborCount(v.x, v.y)
     deadNeighbors = deadNeighbors.concat(result.deadCells)
-    if (result.count == 2 || result.count == 3) {
+    if ((result.count == 2 || result.count == 3) && isWithinWindow(v.x, v.y)) {
       newCellMap.set(k, v)
     }
   })
@@ -129,7 +136,7 @@ function updateCells() {
   // any dead cells with exactly 3 neighbors becomes a live cell
   deadNeighbors.forEach((e) => {
     const result = getNeighborCount(e.x, e.y)
-    if (result.count == 3) {
+    if (result.count == 3 && isWithinWindow(e.x, e.y)) {
       newCellMap.set(getCoordKey(e.x, e.y), e)
     }
   })
