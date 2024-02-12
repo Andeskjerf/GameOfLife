@@ -4,8 +4,13 @@ const ctx = canvas.getContext('2d')
 let width, height, cellSize
 let simRunning = false
 const liveColor = 'black'
+const cursorColor = '#2d2d2d'
 
 let cells = new Map()
+let cursorPos = {
+	x: 0,
+	y: 0
+}
 
 function setup() {
   width = window.innerWidth
@@ -15,6 +20,7 @@ function setup() {
   cellSize = Math.floor(width / 50)
 
   canvas.addEventListener('mousedown', onMouseDown)
+	canvas.addEventListener('mousemove', updateCursorPos)
   canvas.addEventListener('keydown', onKeyDown)
 }
 
@@ -42,6 +48,15 @@ function onMouseDown(e) {
   }
 
   cells.set(coord, { x: xIndex, y: yIndex })
+}
+
+function updateCursorPos(e) {
+  const { x, y } = getCursorPosition(canvas, e)
+  const xIndex = findXIndex(x)
+  const yIndex = findYIndex(y)
+
+	cursorPos.x = xIndex
+	cursorPos.y = yIndex
 }
 
 function onKeyDown(e) {
@@ -101,13 +116,16 @@ function draw() {
   cells.forEach((e) =>
     ctx.fillRect(e.x * cellSize, e.y * cellSize, cellSize, cellSize),
   )
+
+	ctx.fillStyle = cursorColor
+	ctx.fillRect(cursorPos.x * cellSize, cursorPos.y * cellSize, cellSize, cellSize)
 }
 
 function loop() {
   if (simRunning) updateCells()
-  draw()
 }
 
 setup()
 
 setInterval(loop, 100)
+setInterval(draw, 10)
