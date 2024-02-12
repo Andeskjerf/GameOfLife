@@ -4,7 +4,6 @@ const ctx = canvas.getContext('2d')
 let width, height, cellSize
 let simRunning = false
 const liveColor = 'black'
-const deadColor = 'white'
 
 let cells = new Map()
 
