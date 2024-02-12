@@ -19,8 +19,8 @@ function setup() {
   canvas.width = width
   canvas.height = height
   cellSize = 10
-  // cellSize = Math.floor(width / 50)
 
+  window.addEventListener('resize', onResize)
   canvas.addEventListener('mousedown', () => (drawing = true))
   canvas.addEventListener('mouseup', () => (drawing = false))
   canvas.addEventListener('mousemove', onMouseMove)
@@ -43,6 +43,13 @@ function findYIndex(y) {
 
 function getCoordKey(x, y) {
   return `x${x}_y${y}`
+}
+
+function onResize() {
+  width = window.innerWidth
+  height = window.innerHeight
+  canvas.width = width
+  canvas.height = height
 }
 
 function onMouseMove(e) {
