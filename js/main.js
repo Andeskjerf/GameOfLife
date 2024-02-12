@@ -100,10 +100,7 @@ function generateRandomPattern() {
 }
 
 function isWithinWindow(x, y) {
-  if (x < width && y < height && x >= 0 && y >= 0) {
-    return true
-  }
-  return false
+  return x < width && y < height && x >= 0 && y >= 0
 }
 
 function getNeighborCount(x, y) {
