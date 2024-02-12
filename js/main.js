@@ -61,7 +61,7 @@ function getCursorPosition(canvas, event) {
 function getNeighborCount(x, y) {
   let count = 0
   let deadCells = []
-	// get each adjacent cell
+  // get each adjacent cell
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
       if (i === 0 && j === 0) continue
@@ -76,7 +76,7 @@ function updateCells() {
   let deadNeighbors = []
   let newCellMap = new Map()
 
-	// only live cells with either 2 or 3 neighbors pass on to the next generation
+  // only live cells with either 2 or 3 neighbors pass on to the next generation
   cells.forEach((v, k) => {
     const result = getNeighborCount(v.x, v.y)
     deadNeighbors = deadNeighbors.concat(result.deadCells)
@@ -85,13 +85,13 @@ function updateCells() {
     }
   })
 
-	// any dead cells with exactly 3 neighbors becomes a live cell
-	deadNeighbors.forEach((e) => {
-		const result = getNeighborCount(e.x, e.y)
-		if (result.count == 3) {
-			newCellMap.set(getCoordKey(e.x, e.y), e)
-		}
-	})
+  // any dead cells with exactly 3 neighbors becomes a live cell
+  deadNeighbors.forEach((e) => {
+    const result = getNeighborCount(e.x, e.y)
+    if (result.count == 3) {
+      newCellMap.set(getCoordKey(e.x, e.y), e)
+    }
+  })
 
   cells = newCellMap
 }
